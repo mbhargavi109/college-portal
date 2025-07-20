@@ -1,0 +1,89 @@
+<h2>Class Notes</h2>
+<% sort_icon = ->(q, attr) do
+  if q.sorts.any? { |s| s.name == attr.to_s }
+    direction = q.sorts.find { |s| s.name == attr.to_s }.dir
+    if direction == 'asc'
+      '<i class="bi bi-caret-up-fill ms-1"></i>'.html_safe
+    else
+      '<i class="bi bi-caret-down-fill ms-1"></i>'.html_safe
+    end
+  end
+end %>
+<%= search_form_for @q, url: notes_path, method: :get, html: { class: 'mb-3' } do |f| %>
+  <div class="row g-2">
+    <div class="col-md-3">
+      <%= select_tag :department_id, options_from_collection_for_select(@departments, :id, :name, params[:department_id]), prompt: "All Departments", class: "form-select" %>
+    </div>
+    <div class="col-md-3">
+      <%= select_tag :subject_id, options_from_collection_for_select(@subjects, :id, :name, params[:subject_id]), prompt: "All Subjects", class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <%= select_tag :semester, options_for_select(@semesters, params[:semester]), prompt: "All Semesters", class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <%= submit_tag "Filter", class: "btn btn-primary w-100" %>
+    </div>
+    <div class="col-md-2">
+      <%= link_to "Upload New Notes", new_note_path, class: "btn btn-success w-100" %>
+    </div>
+  </div>
+<% end %>
+<table class="table table-striped align-middle">
+  <thead>
+    <tr>
+      <th class="text-nowrap"><%= sort_link @q, :title, "Title", class: (params.dig(:q, :s)&.include?("title") ? "text-primary fw-bold" : "") %><%= sort_icon.call(@q, :title) %></th>
+      <th class="text-nowrap"><%= sort_link @q, :description, "Description", class: (params.dig(:q, :s)&.include?("description") ? "text-primary fw-bold" : "") %><%= sort_icon.call(@q, :description) %></th>
+      <th class="text-nowrap"><%= sort_link @q, :department_id, "Department", class: (params.dig(:q, :s)&.include?("department_id") ? "text-primary fw-bold" : "") %><%= sort_icon.call(@q, :department_id) %></th>
+      <th class="text-nowrap"><%= sort_link @q, :subject_id, "Subject", class: (params.dig(:q, :s)&.include?("subject_id") ? "text-primary fw-bold" : "") %><%= sort_icon.call(@q, :subject_id) %></th>
+      <th class="text-nowrap"><%= sort_link @q, :semester, "Semester", class: (params.dig(:q, :s)&.include?("semester") ? "text-primary fw-bold" : "") %><%= sort_icon.call(@q, :semester) %></th>
+      <th class="text-nowrap"><%= sort_link @q, :user_id, "Uploaded By", class: (params.dig(:q, :s)&.include?("user_id") ? "text-primary fw-bold" : "") %><%= sort_icon.call(@q, :user_id) %></th>
+      <th>Files</th>
+      <th class="text-end">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @notes.each do |note| %>
+      <tr>
+        <td><%= note.title %></td>
+        <td><%= note.description %></td>
+        <td><%= note.department.name %></td>
+        <td><%= note.subject.name %></td>
+        <td><%= note.semester %></td>
+        <td><%= note.user.name %></td>
+        <td>
+          <% if note.files.attached? %>
+            <ul class="mb-0 ps-3">
+              <% note.files.each do |file| %>
+                <li class="d-flex align-items-center justify-content-between">
+                  <% ext = File.extname(file.filename.to_s).downcase %>
+                  <% icon = case ext
+                    when ".pdf" then "bi bi-file-earmark-pdf-fill text-danger"
+                    when ".doc", ".docx" then "bi bi-file-earmark-word-fill text-primary"
+                    when ".ppt", ".pptx" then "bi bi-file-earmark-ppt-fill text-warning"
+                    when ".txt" then "bi bi-file-earmark-text-fill text-secondary"
+                    else "bi bi-file-earmark"
+                  end %>
+                  <span>
+                    <%= link_to url_for(file), target: "_blank", title: file.filename.to_s do %>
+                      <i class="<%= icon %> fs-4"></i>
+                    <% end %>
+                  </span>
+                  <%= button_to "Delete File", delete_file_note_path(note, file_id: file.id), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-sm btn-danger ms-2" %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        </td>
+        <td class="text-end">
+          <div class="d-inline-flex gap-2">
+            <%= button_to "Delete Note", note_path(note), method: :delete, data: { turbo_confirm: "Are you sure you want to delete this note and all its files?" }, class: "btn btn-danger btn-sm" %>
+            <%= link_to "Edit", edit_note_path(note), class: "btn btn-primary btn-sm" %>
+          </div>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<div class="d-flex justify-content-center">
+  <%= paginate @notes %>
+</div> 

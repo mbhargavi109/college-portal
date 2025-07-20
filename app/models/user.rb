@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   belongs_to :department
   belongs_to :subject
+  has_many :notes
 
   validates :department, :subject, presence: true
   validates :name, :role, presence: true

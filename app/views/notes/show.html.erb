@@ -1,0 +1,15 @@
+<h2><%= @note.title %></h2>
+<p><strong>Description:</strong> <%= @note.description %></p>
+<p><strong>Department:</strong> <%= @note.department.name %></p>
+<p><strong>Subject:</strong> <%= @note.subject.name %></p>
+<p><strong>Semester:</strong> <%= @note.semester %></p>
+<p><strong>Uploaded by:</strong> <%= @note.user.name %></p>
+<h4>Files:</h4>
+<ul>
+  <% @note.files.each do |file| %>
+    <li>
+      <%= link_to file.filename.to_s, url_for(file), target: "_blank" %>
+    </li>
+  <% end %>
+</ul>
+<%= link_to "Back to Notes List", notes_path, class: "btn btn-secondary mt-3" %> 

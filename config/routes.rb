@@ -12,6 +12,15 @@ Rails.application.routes.draw do
   get 'teachers/dashboard', to: 'teachers#dashboard'
   get 'students/dashboard', to: 'students#dashboard'
 
+  resources :notes do
+    member do
+      delete :delete_file
+      get :edit
+      patch :update
+      put :update
+    end
+  end
+
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

@@ -1,0 +1,50 @@
+<h2>Upload Notes</h2>
+
+<%= form_with(model: @note, local: true, html: { multipart: true }, data: { turbo: false }) do |f| %>
+  <% if @note.errors.any? %>
+
+    <div class="alert alert-danger">
+      <h4>Errors:</h4>
+      <ul>
+        <% @note.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :title, class: "form-label" %>
+    <%= f.text_field :title, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :description, class: "form-label" %>
+    <%= f.text_area :description, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :semester, class: 'form-label' %>
+    <%= f.select :semester, (1..8).to_a, { prompt: 'Select Semester' }, class: 'form-select' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :department_id, "Department", class: "form-label" %>
+    <%= f.collection_select :department_id, Department.all, :id, :name, { prompt: "Select Department" }, class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :subject_id, "Subject", class: "form-label" %>
+    <%= f.collection_select :subject_id, Subject.all, :id, :name, { prompt: "Select Subject" }, class: "form-select" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :files, "Upload Files (PDF, DOC, PPT, TXT)", class: "form-label" %>
+    <%= f.file_field :files, multiple: true, accept: ".pdf,.doc,.docx,.ppt,.pptx,.txt", class: "form-control" %>
+  </div>
+
+  <div class="text-end">
+    <%= f.submit "Upload", class: "btn btn-success" %>
+    <%= link_to "Back", notes_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>
