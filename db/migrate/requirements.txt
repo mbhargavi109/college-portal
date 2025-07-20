@@ -1,0 +1,8 @@
+django>=4.0
+gunicorn
+python-decouple
+django-jazzmin
+djangorestframework
+drf-yasg
+psycopg2
+requests

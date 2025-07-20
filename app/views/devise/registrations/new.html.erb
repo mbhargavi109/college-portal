@@ -1,0 +1,85 @@
+<div class="container mt-5">
+  <h2 class="mb-4">Sign up</h2>
+
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: 'needs-validation' }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+
+    <div class="mb-3">
+      <%= f.label :name, class: 'form-label' %>
+      <%= f.text_field :name, class: 'form-control' %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :role, class: 'form-label' %>
+      <%= f.select :role, User::ROLES.map { |r| [r.titleize, r] }, {}, class: 'form-select' %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :department_id, "Department", class: 'form-label' %>
+      <%= f.collection_select :department_id, Department.all, :id, :name, { prompt: 'Select Department' }, { class: 'form-select' } %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :semester, class: 'form-label' %>
+      <%= f.select :semester, (1..8).to_a, { prompt: 'Select Semester' }, class: 'form-select' %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :subject_id, "Subject", class: 'form-label' %>
+      <%= f.collection_select :subject_id, Subject.all, :id, :name, { prompt: 'Select Subject' }, { class: 'form-select' } %>
+    </div>
+
+    <div class="mb-3" id='user_roll_number1'>
+      <%= f.label :roll_number, class: 'form-label' %>
+      <%= f.text_field :roll_number, class: 'form-control' %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :email, class: 'form-label' %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control' %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :password, class: 'form-label' %>
+      <% if @minimum_password_length %>
+        <small class="form-text text-muted">(<%= @minimum_password_length %> characters minimum)</small>
+      <% end %>
+      <%= f.password_field :password, autocomplete: "new-password", class: 'form-control' %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :password_confirmation, class: 'form-label' %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: 'form-control' %>
+    </div>
+
+    <div class="d-grid">
+      <%= f.submit "Sign up", class: "btn btn-primary" %>
+    </div>
+  <% end %>
+
+  <div class="mt-3">
+    <%= render "devise/shared/links" %>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const roleSelect = document.getElementById("user_role");
+    const rollNumberField = document.getElementById("user_roll_number1");
+
+    function toggleRollNumberField() {
+      console.log("called");
+      if (roleSelect.value === "student") {
+        rollNumberField.style.display = "block";
+      } else {
+        rollNumberField.style.display = "none";
+      }
+    }
+
+    // Run on page load
+    toggleRollNumberField();
+
+    // Run every time the role changes
+    roleSelect.addEventListener("change", toggleRollNumberField);
+  });
+</script>
